@@ -1,0 +1,28 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+
+# Env files (keep .env.example, ignore real ones)
+.env
+.env.production
+backend/.env
+
+# SQLite (no longer used)
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Uploads (user photos - not in git)
+backend/uploads/
