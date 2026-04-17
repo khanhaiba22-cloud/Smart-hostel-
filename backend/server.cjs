@@ -453,9 +453,18 @@ app.post('/api/profile/photo', auth, upload.single('photo'), async (req, res) =>
 });
 
 // ── Health ────────────────────────────────────────────────────
-app.get('/', (_req, res) => res.json({ status:'ok', message:'Hostel API (MongoDB)' }));
-app.use((_req, res) => res.status(404).json({ success:false, message:'Route not found.' }));
-app.use((err, _req, res, _next) => { console.error(err); res.status(500).json({ success:false, message:'Internal server error.' }); });
+app.get('/', (_req, res) => res.json({ status: 'ok', message: 'Hostel API (MongoDB)' }));
+
+// ── 404 handler ───────────────────────────────────────────────
+app.use(function notFound(req, res) {
+  res.status(404).json({ success: false, message: 'Route not found.' });
+});
+
+// ── Error handler ─────────────────────────────────────────────
+app.use(function errorHandler(err, req, res, next) { // eslint-disable-line no-unused-vars
+  console.error('Server error:', err.message);
+  res.status(500).json({ success: false, message: 'Internal server error.' });
+});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`\n🚀 Hostel API running`);
