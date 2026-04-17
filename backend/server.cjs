@@ -453,7 +453,16 @@ app.post('/api/profile/photo', auth, upload.single('photo'), async (req, res) =>
 });
 
 // ── Health ────────────────────────────────────────────────────
-app.get('/', (_req, res) => res.json({ status: 'ok', message: 'Hostel API (MongoDB)' }));
+app.get('/', (_req, res) => res.json({
+  status: 'ok',
+  message: 'Hostel API (MongoDB)',
+  mongo: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+  env: {
+    port: PORT,
+    mongoSet: !!process.env.MONGO_URI,
+    jwtSet: !!process.env.JWT_SECRET,
+  }
+}));
 
 // ── 404 handler ───────────────────────────────────────────────
 app.use(function notFound(req, res) {
