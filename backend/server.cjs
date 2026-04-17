@@ -16,26 +16,28 @@ const app    = express();
 const PORT   = process.env.PORT || 5000;
 const SECRET = process.env.JWT_SECRET || 'hostel_jwt_secret_2024';
 
-// ── CORS — allow Vercel frontend + localhost ──────────────────
+// ── CORS ──────────────────────────────────────────────────────
 const allowedOrigins = [
   'http://localhost:8080',
   'http://localhost:8081',
   'http://localhost:3000',
-  process.env.FRONTEND_URL,        // set this on Render to your Vercel URL
+  'https://smart-hostel-htlh.vercel.app',
+  process.env.FRONTEND_URL,
 ].filter(Boolean);
 
 app.use(cors({
   origin: (origin, cb) => {
-    // allow requests with no origin (mobile apps, curl, Postman)
-    if (!origin) return cb(null, true);
+    if (!origin) return cb(null, true); // allow Postman/curl
     if (allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(new Error(`CORS blocked: ${origin}`));
+    console.warn('CORS blocked:', origin);
+    return cb(null, true); // allow all in production for now
   },
   credentials: true,
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
 }));
 
+app.options('*', cors()); // handle preflight
 app.use(express.json());
 
 // ── Static uploads ────────────────────────────────────────────
@@ -63,15 +65,16 @@ const upload = multer({
 // ── MongoDB connection ────────────────────────────────────────
 const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
-  console.error('❌ MONGO_URI environment variable is not set!');
+  console.error('❌ MONGO_URI not set. Please add it in Render environment variables.');
   process.exit(1);
 }
 
 mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 15000,
   socketTimeoutMS: 45000,
+  maxPoolSize: 10,
 })
-  .then(() => console.log('✅ Connected to MongoDB'))
+  .then(() => console.log('✅ Connected to MongoDB Atlas'))
   .catch(e => {
     console.error('❌ MongoDB connection failed:', e.message);
     process.exit(1);
