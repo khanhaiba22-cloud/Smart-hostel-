@@ -4,6 +4,11 @@ require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 process.on('uncaughtException',  err => console.error('Uncaught:', err.message));
 process.on('unhandledRejection', err => console.error('Unhandled:', err));
 
+// Debug: log all env vars on startup
+console.log('ENV CHECK - MONGO_URI exists:', !!process.env.MONGO_URI);
+console.log('ENV CHECK - PORT:', process.env.PORT);
+console.log('ENV CHECK - JWT_SECRET exists:', !!process.env.JWT_SECRET);
+
 const express  = require('express');
 const cors     = require('cors');
 const jwt      = require('jsonwebtoken');
