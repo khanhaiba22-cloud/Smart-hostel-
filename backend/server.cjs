@@ -1,6 +1,6 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
-// Prevent crashes from killing the server
+// Prevent crashes
 process.on('uncaughtException',  err => console.error('Uncaught:', err.message));
 process.on('unhandledRejection', err => console.error('Unhandled:', err));
 
@@ -43,9 +43,21 @@ const upload = multer({
 });
 
 // ── MongoDB connection ────────────────────────────────────────
-mongoose.connect(process.env.MONGO_URI)
+const MONGO_URI = process.env.MONGO_URI;
+if (!MONGO_URI) {
+  console.error('❌ MONGO_URI environment variable is not set!');
+  process.exit(1);
+}
+
+mongoose.connect(MONGO_URI, {
+  serverSelectionTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+})
   .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(e => { console.error('❌ MongoDB error:', e.message); process.exit(1); });
+  .catch(e => {
+    console.error('❌ MongoDB connection failed:', e.message);
+    process.exit(1);
+  });
 
 // ── Helpers ───────────────────────────────────────────────────
 function norm(doc) {
