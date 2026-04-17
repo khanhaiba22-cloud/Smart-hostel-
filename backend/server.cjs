@@ -1,13 +1,7 @@
 require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
-// Prevent crashes
 process.on('uncaughtException',  err => console.error('Uncaught:', err.message));
 process.on('unhandledRejection', err => console.error('Unhandled:', err));
-
-// Debug: log all env vars on startup
-console.log('ENV CHECK - MONGO_URI exists:', !!process.env.MONGO_URI);
-console.log('ENV CHECK - PORT:', process.env.PORT);
-console.log('ENV CHECK - JWT_SECRET exists:', !!process.env.JWT_SECRET);
 
 const express  = require('express');
 const cors     = require('cors');
@@ -22,7 +16,26 @@ const app    = express();
 const PORT   = process.env.PORT || 5000;
 const SECRET = process.env.JWT_SECRET || 'hostel_jwt_secret_2024';
 
-app.use(cors());
+// ── CORS — allow Vercel frontend + localhost ──────────────────
+const allowedOrigins = [
+  'http://localhost:8080',
+  'http://localhost:8081',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL,        // set this on Render to your Vercel URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.includes(origin)) return cb(null, true);
+    return cb(new Error(`CORS blocked: ${origin}`));
+  },
+  credentials: true,
+  methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+}));
+
 app.use(express.json());
 
 // ── Static uploads ────────────────────────────────────────────
