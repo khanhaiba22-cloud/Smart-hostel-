@@ -4,13 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
-    "start": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"node backend/server.cjs\" \"npm run dev --prefix frontend\"",
-    "build": "npm run build --prefix frontend",
-    "lint": "npm run lint --prefix frontend",
-    "preview": "npm run preview --prefix frontend",
-    "test": "npm run test --prefix frontend",
-    "test:watch": "npm run test:watch --prefix frontend"
+    "dev": "vite",
+    "start": "concurrently -n \"backend,frontend\" -c \"blue,green\" \"node backend/server.cjs\" \"vite\"",
+    "build": "vite build",
+    "build:dev": "vite build --mode development",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
