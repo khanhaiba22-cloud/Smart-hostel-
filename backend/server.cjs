@@ -22,6 +22,8 @@ const allowedOrigins = [
   'http://localhost:8081',
   'http://localhost:3000',
   'https://smart-hostel-htlh.vercel.app',
+  'https://smarthostel.co.in',
+  'https://www.smarthostel.co.in',
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
